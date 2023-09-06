@@ -15,7 +15,8 @@ def respond():
 #if (data['data']['attributes']['eventType'])=='TRANSACTION_CREATED':
     headersAPI= {'accept': 'application/json','Authorization': 'Bearer your_UP_token_here',}
     headersAPIFirefly = {'accept': 'application/json','Authorization': 'Bearer your_Firefly_token_here',}
-    sTagToSearch = 'https://your_firefly_url/api/v1/tags/'
+    fireflyURL = 'https://your_firefly_url'
+    sTagToSearch = fireflyURL+'/api/v1/tags/'
     accountmatrix={"UP Account IDs here followed with the integer for the matching firefly account":3,"add as many as you want":11,}    
     filecount = -1
     fname = str(filecount)+'w.json'
@@ -68,7 +69,7 @@ def respond():
             print('Transfer to, thus saving this transaction for future reconciliation & uploading. 1')
        		#Now actually save the file
        		#see if this transaction is already on firefly.
-            sTagToSearch='https://your_firefly_url/api/v1/tags/'+newtransaction['data']['id']+'/transactions'
+            sTagToSearch=fireflyURL+'/api/v1/tags/'+newtransaction['data']['id']+'/transactions'
 			#Ask firefly api if tag exists        
             r = requests.get(sTagToSearch,headers=headersAPIFirefly)
             fireflyApiResponse = r.json()
@@ -96,7 +97,7 @@ def respond():
         elif txdesc[0:13]=='Transfer from':
             print("Transfer from, thus saving this transaction for future reconciliation & uploading. 4")
         	#Check if this transaction is present
-            sTagToSearch='https://your_firefly_url/api/v1/tags/'+newtransaction['data']['id']+'/transactions'
+            sTagToSearch=fireflyURL+'/api/v1/tags/'+newtransaction['data']['id']+'/transactions'
         	#Ask firefly api if tag exists        
             r = requests.get(sTagToSearch,headers=headersAPIFirefly)
             fireflyApiResponse = r.json()
@@ -130,7 +131,7 @@ def respond():
         #In both instances ensure that the file hasn't already been uploaded to firefly, so wont create duplicates.
         #Transactions can only be searched for in a meaningful way if using tags, else we can only filter by values & dates which is a hassle.
         #As such all transactions will be tagged with the ID from UP's API in Firefly.
-            sTagToSearch='https://your_firefly_url/api/v1/tags/'+newtransaction['data']['id']+'/transactions'
+            sTagToSearch=fireflyURL+'/api/v1/tags/'+newtransaction['data']['id']+'/transactions'
         		#Ask firefly api if tag exists        
             r = requests.get(sTagToSearch,headers=headersAPIFirefly)
             fireflyApiResponse = r.json()
@@ -162,7 +163,7 @@ def respond():
                         else:
                             txFirefly["description"]=txFirefly["description"]+newtransaction['data']['attributes']['description']
                         			#Upload the tx
-                        fireflyapiupload='https://your_firefly_url/api/v1/transactions'
+                        fireflyapiupload=fireflyURL+'/api/v1/transactions'
                         payload = {"transactions":[txFirefly]}
                         r = requests.post(fireflyapiupload,headers=headersAPIFirefly,json=payload)
                         newtransaction = r.json()
@@ -198,7 +199,7 @@ def respond():
                         else:
                             txFirefly["description"]=txFirefly["description"]+' '+newtransaction['data']['attributes']['description']
                         txFirefly["tags"]=newtransaction['data']['id']
-                        fireflyapiupload='https://your_firefly_url/api/v1/transactions'
+                        fireflyapiupload=fireflyURL+'/api/v1/transactions'
                         payload = {"transactions":[txFirefly]}
                         r = requests.post(fireflyapiupload,headers=headersAPIFirefly,json=payload)
                         newtransaction = r.json()
