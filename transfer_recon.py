@@ -15,7 +15,8 @@ import sys
 os.chdir(sys.path[0])
 headersAPIUP = {'accept': 'application/json','Authorization': 'Bearer up:yeah:enter your own numbers here',}
 headersAPIFirefly = {'accept': 'application/json','Authorization': 'Bearer enter_your_own_starting_with_EY_here',}
-sTagToSearch = 'https://your_firefly_url/api/v1/tags/'
+fireflyURL = 'https://your_firefly_url'
+sTagToSearch = fireflyURL+'/api/v1/tags/'
 ##This matrix relates accounts on UP API to Firefly API
 accountmatrix={"account_id_1_matched_to_integer_for_firefly_after_this_semicolon":3,"enter_all_account_ids_in_this_manner":11,}
 #Initiate empty arrays to for files to be deleted.
@@ -45,7 +46,7 @@ for i in tfarray:
         if (tfcurrency==ttcurrency) and (tfdate==ttdate) and (abs(tfamount)==abs(ttamount)):
             #These are the same files. Upload the transaction and exit out of the loops. Save the names of these files and deleted them after upload. 
             #See if this has been uploaded to firefly previously
-            sTagToSearch='https://your_firefly_url_here/api/v1/tags/'+tfdata['data']['id']+ttdata['data']['id']+'/transactions'
+            sTagToSearch=fireflyURL+'/api/v1/tags/'+tfdata['data']['id']+ttdata['data']['id']+'/transactions'
             r = requests.get(sTagToSearch,headers=headersAPIFirefly)
             fireflyApiResponse = r.json()
             try:
@@ -68,7 +69,7 @@ for i in tfarray:
                             description_firefly=description_firefly+' '+tfdata['data']['attributes']['message']
                         txFirefly["description"]=description_firefly
                         #Now upload all the prepared data
-                        fireflyapiupload='https://your_firefly_url/api/v1/transactions'
+                        fireflyapiupload=fireflyURL+'/api/v1/transactions'
                         payload = {"transactions":[txFirefly]}
                         print(payload)
                         r = requests.post(fireflyapiupload,headers=headersAPIFirefly,json=payload)
